@@ -20,7 +20,12 @@ class GamespiderSpider(scrapy.Spider):
             #yield response.follow(next_page_url, callback=self.parse)
     
     def parse_game_page(self, response):
+        # Find all review blocks
+        review_names = response.css('.col-lg-5 div:nth-child(1)::text').getall()
+        review_scores = response.css('.col-lg-5 div .score-bold::text').getall()
 
+        reviews = {name.strip(): score.strip() for name, score in zip(review_names, review_scores)}
+      
         yield {
             'OpenCritic_Rating': response.css('.col-4 img::attr(alt)').get(),
             'TopCritic_Average': response.css('.inner-orb::text').getall()[0],
@@ -29,7 +34,7 @@ class GamespiderSpider(scrapy.Spider):
             'publisher': response.css('.companies span::text').get(),
             'platform': response.css('.platforms span strong::text').getall(),
             'date': response.css('.platforms::text').get(),
-            
+            "reviews": reviews,
         }
 #
 #'Eurogamer': response.css('.col-lg-5 div .score-bold::text').getall()[0],
