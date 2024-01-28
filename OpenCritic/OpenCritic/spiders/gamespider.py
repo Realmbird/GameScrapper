@@ -14,10 +14,10 @@ class GamespiderSpider(scrapy.Spider):
             if relative_url is not None:
                 yield response.follow(relative_url, callback=self.parse_game_page)
             
-        #next_page = response.css('a[rel="next"]::attr(href)').get()
+        next_page = response.css('a[rel="next"]::attr(href)').get()
 
-        #if next_page is not None:
-            #yield response.follow(next_page_url, callback=self.parse)
+        if next_page is not None:
+            yield response.follow(next_page, callback=self.parse)
     
     def parse_game_page(self, response):
         # Find all review blocks
@@ -36,6 +36,7 @@ class GamespiderSpider(scrapy.Spider):
             'date': response.css('.platforms::text').get(),
             "reviews": reviews,
         }
+        # total 8025 scarpped 7341
 #
 #'Eurogamer': response.css('.col-lg-5 div .score-bold::text').getall()[0],
 #'IGN': response.css('.col-lg-5 div .score-bold::text').getall()[1],
