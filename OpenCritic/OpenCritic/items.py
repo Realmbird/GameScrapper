@@ -9,4 +9,11 @@ import scrapy
 class OpencriticItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
-    pass
+    OpenCritic_Rating = scrapy.Field()
+    TopCritic_Average = scrapy.Field()
+    Critics_Recommend  = scrapy.Field()
+    title = scrapy.Field()
+    publisher  = scrapy.Field()
+    platform = scrapy.Field()
+    date = scrapy.Field()
+    reviews = scrapy.Field()

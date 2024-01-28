@@ -1,11 +1,10 @@
 import scrapy
-
+from OpenCritic.items import OpencriticItem 
 
 class GamespiderSpider(scrapy.Spider):
     name = "gamespider"
     allowed_domains = ["opencritic.com"]
     start_urls = ["https://opencritic.com/browse/all?page=1"]
-
     def parse(self, response):
         # gets all the games
         games = response.css('div.game-name a')
@@ -25,17 +24,24 @@ class GamespiderSpider(scrapy.Spider):
         review_scores = response.css('.col-lg-5 div .score-bold::text').getall()
 
         reviews = {name.strip(): score.strip() for name, score in zip(review_names, review_scores)}
-      
-        yield {
-            'OpenCritic_Rating': response.css('.col-4 img::attr(alt)').get(),
-            'TopCritic_Average': response.css('.inner-orb::text').getall()[0],
-            'Critics_Recommend': response.css('.inner-orb::text').getall()[1],
-            'title': response.css('.mb-0::text').get(),
-            'publisher': response.css('.companies span::text').get(),
-            'platform': response.css('.platforms span strong::text').getall(),
-            'date': response.css('.platforms::text').get(),
-            "reviews": reviews,
-        }
+
+        game_item = OpencriticItem()
+        game_item['OpenCritic_Rating'] = response.css('.col-4 img::attr(alt)').get()
+        game_item['TopCritic_Average'] = response.css('.inner-orb::text').getall()[0]
+
+        inner_orb_texts = response.css('.inner-orb::text').getall()
+        if len(inner_orb_texts) > 1:
+            game_item['Critics_Recommend'] = inner_orb_texts[1]
+        else:
+            game_item['Critics_Recommend'] = None
+
+        # game_item['Critics_Recommend'] = response.css('.inner-orb::text').getall()[1]
+        game_item['title'] = response.css('.mb-0::text').get()
+        game_item['publisher'] = response.css('.companies span::text').get()
+        game_item['platform'] = response.css('.platforms span strong::text').getall()
+        game_item['date'] = response.css('.platforms::text').get()
+        game_item["reviews"] = reviews
+        yield game_item
         # total 8025 scarpped 7341
 #
 #'Eurogamer': response.css('.col-lg-5 div .score-bold::text').getall()[0],
