@@ -16,4 +16,4 @@ class OpencriticItem(scrapy.Item):
     publisher  = scrapy.Field()
     platform = scrapy.Field()
     date = scrapy.Field()
-    reviews = scrapy.Field()
+    # reviews = scrapy.Field()
